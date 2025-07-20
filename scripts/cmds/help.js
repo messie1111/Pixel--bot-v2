@@ -1,12 +1,12 @@
-const { getPrefix } = global.utils;
+ const { getPrefix } = global.utils;
 const { commands, aliases } = global.GoatBot;
 
-// GIF fixe pour M•CHARBEL BOT
-const botGif = "https://tiny.one/2zb2hdtv";
+// Remplacez cette URL par celle de votre image (photo)
+const botImage = "https://tiny.one/2p9673jt"; // J'ai remplacé l'URL du GIF par celle de votre photo
 
 // Configuration du propriétaire
-const BOT_OWNER = "ꗇ︱Blẳȼk 义";
-const FACEBOOK_LINK = "https://www.facebook.com/share/18yM3GkFKW/";
+const BOT_OWNER = "Master Charbel";
+const FACEBOOK_LINK = "https://www.facebook.com/charbel.bot.2024";
 
 function roleTextToString(role) {
   switch (role) {
@@ -62,17 +62,17 @@ module.exports = {
       }
 
       // Ajouter le bloc INFO en bas
-      helpMessage += `┍━━━[ 𝙸𝙽𝙵𝙾 ]━━━▧▧\n` +
+      helpMessage += `┍━━━[ �𝙽𝙵𝙾 ]━━━▧▧\n` +
                      `┋➥ 𝐓𝐎𝐓𝐀𝐋 𝐂𝐌𝐃: ${totalCommands}\n` +
                      `┋➥ 𝐏𝐑𝐄𝐅𝐈𝐗 : ${prefix}\n` +
                      `┋➥ 𝐎𝐖𝐍𝐄𝐑 : ${BOT_OWNER}\n` +
                      `┋➥ 𝐅𝐀𝐂𝐄𝐁𝐎𝐎𝐊 : ${FACEBOOK_LINK}\n` +
                      `┕━━━━━━━━━━━━▧▧`;
 
-      // Envoyer avec le GIF
+      // Envoyer avec l'image (remplacement du GIF)
       await message.reply({
         body: helpMessage,
-        attachment: await global.utils.getStreamFromURL(botGif)
+        attachment: await global.utils.getStreamFromURL(botImage) // J'ai changé botGif en botImage
       });
     } else {
       // Aide d'une commande précise
@@ -136,10 +136,10 @@ ${guideText.split("\n").map(line => "┋➥ " + line).join("\n")}
 ${remarksText}
 ┕━━━━━━━━━━━━━━━▧▧`;
 
-      // Envoyer avec le GIF
+      // Envoyer avec l'image (remplacement du GIF)
       await message.reply({
         body: helpMsg,
-        attachment: await global.utils.getStreamFromURL(botGif)
+        attachment: await global.utils.getStreamFromURL(botImage) // J'ai changé botGif en botImage
       });
     }
   }
