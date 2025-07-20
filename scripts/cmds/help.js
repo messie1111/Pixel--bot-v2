@@ -1,146 +1,146 @@
-const fs = require("fs-extra");
-const axios = require("axios");
-const path = require("path");
 const { getPrefix } = global.utils;
 const { commands, aliases } = global.GoatBot;
+
+// GIF fixe pour M•CHARBEL BOT
+const botGif = "https://tiny.one/2zb2hdtv";
+
+// Configuration du propriétaire
+const BOT_OWNER = "ꗇ︱Blẳȼk 义";
+const FACEBOOK_LINK = "https://www.facebook.com/share/18yM3GkFKW/";
+
+function roleTextToString(role) {
+  switch (role) {
+    case 0: return "0 (Tous les utilisateurs)";
+    case 1: return "1 (Admins de groupe)";
+    case 2: return "2 (Admins du bot)";
+    default: return "Inconnu";
+  }
+}
 
 module.exports = {
   config: {
     name: "help",
-    aliases:["use", "cmdl"],
-    version: "1.18",
-    author: "HaSaN", 
+    version: "3.1",
+    author: "M•CHARBEL TEAM",
     countDown: 5,
     role: 0,
-    shortDescription: {
-      en: "View command usage",
-    },
-    longDescription: {
-      en: "View command usage and list all commands or commands by category",
-    },
-    category: "info",
-    guide: {
-      en: "{pn} / help cmdName\n{pn} -c <categoryName>",
-    },
-    priority: 1,
+    shortDescription: "Menu d'aide stylisé",
+    longDescription: "Affiche toutes les commandes par catégorie avec le style M•CHARBEL",
+    category: "system",
+    guide: "{pn}"
   },
 
-  onStart: async function ({ message, args, event, threadsData, role }) {
+  onStart: async function ({ message, args, event, role }) {
     const { threadID } = event;
-    const threadData = await threadsData.get(threadID);
-    const prefix = getPrefix(threadID);
+    const prefix = await getPrefix(threadID);
 
-    if (args.length === 0) {
+    if (!args[0]) {
+      // Organiser les commandes par catégorie
       const categories = {};
-      let msg = "";
+      let totalCommands = 0;
 
-      msg += `╔══════════════╗\n🔹 𝑪𝑶𝑴𝑴𝑨𝑵𝑫 𝑳𝑰𝑺𝑻 🔹\n╚══════════════╝\n`;
-
-      for (const [name, value] of commands) {
-        if (value.config.role > 1 && role < value.config.role) continue;
-
-        const category = value.config.category || "Uncategorized";
-        categories[category] = categories[category] || { commands: [] };
-        categories[category].commands.push(name);
-      }
-
-      Object.keys(categories).forEach((category) => {
-        if (category !== "info") {
-          msg += `\n╭────────────⭓\n│『 ${category.toUpperCase()} 』`;
-
-          const names = categories[category].commands.sort();
-          names.forEach((item) => {
-            msg += `\n│𖤍 ${item}`;
-          });
-
-          msg += `\n╰────────⭓`;
+      for (const [cmdName, cmd] of commands) {
+        if (cmd.config.role > role) continue;
+        const category = cmd.config.category || "GÉNÉRAL";
+        if (!categories[category]) {
+          categories[category] = [];
         }
-      });
+        categories[category].push(cmdName);
+        totalCommands++;
+      }
 
-      const totalCommands = commands.size;
-      msg += `\n𝗖𝘂𝗿𝗿𝗲𝗻𝘁𝗹𝘆, 𝘁𝗵𝗲 𝗯𝗼𝘁 𝗵𝗮𝘀 ${totalCommands} 𝗰𝗼𝗺𝗺𝗮𝗻𝗱𝘀 𝘁𝗵𝗮𝘁 𝗰𝗮𝗻 𝗯𝗲 𝘂𝘀𝗲𝗱\n`;
-      msg += `\n𝗧𝘆𝗽𝗲 ${prefix}𝗵𝗲𝗹𝗽 𝗰𝗺𝗱𝗡𝗮𝗺𝗲 𝘁𝗼 𝘃𝗶𝗲𝘄 𝘁𝗵𝗲 𝗱𝗲𝘁𝗮𝗶𝗹𝘀 𝗼𝗳 𝘁𝗵𝗮𝘁 𝗰𝗼𝗺𝗺𝗮𝗻𝗱\n`;
-      msg += `\n🫧𝑩𝑶𝑻 𝑵𝑨𝑴𝑬🫧:🎭𝘛ₒₓᵢ𝚌ᵢ𝚝ₑᵣ⭕`;
-      msg += `\n𓀬 𝐁𝐎𝐓 𝐎𝐖𝐍𝐄𝐑 𓀬`;
-      msg += `\n 	 					`;
-      msg += `\n~𝙉𝘼𝙈𝙀:♡︎ 𝙃𝘼𝙎𝘼𝙉 ♡︎`;
-      msg += `\n~𝙁𝘽:https://www.facebook.com/Itz.HaSaN.00`;
+      // Construire le message avec le style demandé
+      let helpMessage = `▧▧━━━━━━━━━━━━━━▧▧\n ▧ 𝗠•𝗖𝗛𝗔𝗥𝗕𝗘𝗟⊶⊷𝗕ⓞ𝗧 ▧\n▨▨━━━━━━━━━━━━━━▨▨\n\n`;
 
+      // Ajouter chaque catégorie dans un bloc séparé
+      for (const [category, cmdList] of Object.entries(categories)) {
+        helpMessage += `┍━[ ${category.toUpperCase()} ]\n`;
+        cmdList.sort().forEach(cmd => {
+          helpMessage += `┋▦ ${cmd}\n`;
+        });
+        helpMessage += `┕━━━━━━━━━━━━━━━▧▧\n\n`;
+      }
+
+      // Ajouter le bloc INFO en bas
+      helpMessage += `┍━━━[ 𝙸𝙽𝙵𝙾 ]━━━▧▧\n` +
+                     `┋➥ 𝐓𝐎𝐓𝐀𝐋 𝐂𝐌𝐃: ${totalCommands}\n` +
+                     `┋➥ 𝐏𝐑𝐄𝐅𝐈𝐗 : ${prefix}\n` +
+                     `┋➥ 𝐎𝐖𝐍𝐄𝐑 : ${BOT_OWNER}\n` +
+                     `┋➥ 𝐅𝐀𝐂𝐄𝐁𝐎𝐎𝐊 : ${FACEBOOK_LINK}\n` +
+                     `┕━━━━━━━━━━━━▧▧`;
+
+      // Envoyer avec le GIF
       await message.reply({
-        body: msg,
+        body: helpMessage,
+        attachment: await global.utils.getStreamFromURL(botGif)
       });
-    } else if (args[0] === "-c") {
-      if (!args[1]) {
-        await message.reply("Please specify a category name.");
-        return;
-      }
-
-      const categoryName = args[1].toLowerCase();
-      const filteredCommands = Array.from(commands.values()).filter(
-        (cmd) => cmd.config.category?.toLowerCase() === categoryName
-      );
-
-      if (filteredCommands.length === 0) {
-        await message.reply(`No commands found in the category "${categoryName}".`);
-        return;
-      }
-
-      let msg = `╔══════════════╗\n༒︎ ${categoryName.toUpperCase()} COMMANDS ༒︎\n╚══════════════╝\n`;
-
-      filteredCommands.forEach((cmd) => {
-        msg += `\n☠︎︎ ${cmd.config.name} `;
-      });
-
-      await message.reply(msg);
     } else {
+      // Aide d'une commande précise
       const commandName = args[0].toLowerCase();
       const command = commands.get(commandName) || commands.get(aliases.get(commandName));
 
       if (!command) {
-        await message.reply(`Command "${commandName}" not found.`);
-      } else {
-        const configCommand = command.config;
-        const roleText = roleTextToString(configCommand.role);
-        const author = configCommand.author || "Unknown";
-
-        const longDescription = configCommand.longDescription
-          ? configCommand.longDescription.en || "No description"
-          : "No description";
-
-        const guideBody = configCommand.guide?.en || "No guide available.";
-        const usage = guideBody.replace(/{p}/g, prefix).replace(/{n}/g, configCommand.name);
-
-        const response = `╭── 𝑵𝑨𝑴𝑬 ────⭓\n` +
-          `│ ${configCommand.name}\n` +
-          `├── 𝑰𝑵𝑭𝑶\n` +
-          `│ 𝐷𝑒𝑠𝑐𝑟𝑖𝑝𝑡𝑖𝑜𝑛: ${longDescription}\n` +
-          `│ 𝑂𝑡ℎ𝑒𝑟 𝑁𝑎𝑚𝑒: ${configCommand.aliases ? configCommand.aliases.join(", ") : "Do not have"}\n` +
-          `│ 𝑉𝑒𝑟𝑠𝑖𝑜𝑛: ${configCommand.version || "1.0"}\n` +
-          `│ 𝑅𝑜𝑙𝑒: ${roleText}\n` +
-          `│ 𝑇𝑖𝑚𝑒 𝑃𝑒𝑟 𝐶𝑜𝑚𝑚𝑎𝑛𝑑: ${configCommand.countDown || 1}s\n` +
-          `│ 𝐴𝑢𝑡ℎ𝑜𝑟: ${author}\n` +
-          `├── 𝑼𝑺𝑨𝑮𝑬\n` +
-          `│ ${usage}\n` +
-          `├── 𝑵𝑶𝑻𝑬𝑺\n` +
-          `│ 𝑇ℎ𝑒 𝑐𝑜𝑛𝑡𝑒𝑛𝑡 𝑖𝑛𝑠𝑖𝑑𝑒 ♡︎ 𝐇𝐀𝐒𝐀𝐍 ♡︎ 𝑐𝑎𝑛 𝑏𝑒 𝑐ℎ𝑎𝑛𝑔𝑒𝑑\n` +
-          `│ ♕︎ 𝐎𝐖𝐍𝐄𝐑 ♕︎:☠︎︎ 𝙃𝘼𝙎𝘼𝙉 ☠︎︎\n` +
-          `╰━━━━━━━❖`;
-
-        await message.reply(response);
+        await message.reply(`❌ La commande "${commandName}" est introuvable.`);
+        return;
       }
-    }
-  },
-};
 
-function roleTextToString(roleText) {
-  switch (roleText) {
-    case 0:
-      return "0 (All users)";
-    case 1:
-      return "1 (Group administrators)";
-    case 2:
-      return "2 (Admin bot)";
-    default:
-      return "Unknown role";
-  }
+      const c = command.config;
+
+      const description =
+        (typeof c.longDescription === "string" ? c.longDescription :
+        (c.shortDescription?.fr || c.longDescription?.fr)) || "Aucune description";
+
+      const aliasText = c.aliases && c.aliases.length > 0 ? c.aliases.join(", ") : "Aucun";
+
+      let guideText = "";
+      if (c.guide) {
+        if (typeof c.guide === "string") guideText = c.guide;
+        else if (typeof c.guide === "object") {
+          guideText = Object.entries(c.guide).map(([k, v]) => `${k}: ${v}`).join("\n");
+        }
+      } else guideText = "Aucun guide disponible.";
+
+      const usageText = c.usage || c.usages || "Aucun exemple d'utilisation.";
+
+      let remarksText = "";
+      if (Array.isArray(c.remarks) && c.remarks.length > 0) {
+        remarksText = c.remarks.map(r => `┋➥ ${r}`).join("\n");
+      } else {
+        remarksText = "Aucune remarque.";
+      }
+
+      const helpMsg =
+`▧▧━━━━━━━━━━━━━━▧▧
+ ▧ 𝗠•𝗖𝗛𝗔𝗥𝗕𝗘𝗟⊶⊷𝗕ⓞ𝗧 ▧
+▨▨━━━━━━━━━━━━━━▨▨
+
+┍━[ 🔎 AIDE DE LA CMD ]
+┋➥ NOM: ${c.name}
+┋➥ DESCRIPTION: ${description}
+┋➥ AUTRES NOMS: ${aliasText}
+┋➥ VERSION: ${c.version || "1.0"}
+┋➥ ROLE: ${roleTextToString(c.role)}
+┋➥ DELAI: ${c.countDown || c.cooldown || 2}s
+┋➥ AUTEUR: ${c.author || "Inconnu"}
+┕━━━━━━━━━━━━━━━▧▧
+
+┍━[ 📜 UTILISATION  ]
+${guideText.split("\n").map(line => "┋➥ " + line).join("\n")}
+┕━━━━━━━━━━━━━━━▧▧
+
+┍━[ 💡 USAGE EXEMPLE ]
+┋➥ ${usageText}
+┕━━━━━━━━━━━━━━━▧▧
+
+┍━[ 📝 REMARQUES  ]
+${remarksText}
+┕━━━━━━━━━━━━━━━▧▧`;
+
+      // Envoyer avec le GIF
+      await message.reply({
+        body: helpMsg,
+        attachment: await global.utils.getStreamFromURL(botGif)
+      });
     }
+  }
+};
